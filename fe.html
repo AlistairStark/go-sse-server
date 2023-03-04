@@ -1,0 +1,9 @@
+<script>
+  console.log('HELLO THERE PAL')
+  var names = []
+  var client = new EventSource("http://localhost:8080/connect?userId=test")
+  client.onmessage = function (msg) {
+    console.log('THIS IS A STREAM')
+    console.log(msg)
+  }
+</script>
