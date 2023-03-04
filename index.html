@@ -1,0 +1,56 @@
+<html>
+
+<head>
+  <title>Test SSE</title>
+</head>
+
+<body>
+  <h1>Test SSE</h1>
+
+  <!-- Form 1: Connect to EventSource -->
+  <form id="connect-form">
+    <label for="user-id">User ID:</label>
+    <input type="text" id="user-id" name="userId">
+    <button type="submit">Connect</button>
+  </form>
+
+  <!-- Form 2: Send HTTP Request -->
+  <form id="send-form">
+    <label for="channel-id">Channel ID:</label>
+    <input type="text" id="channel-id" name="channelId">
+    <label for="message">Message:</label>
+    <input type="text" id="message" name="message">
+    <button type="submit">Send</button>
+  </form>
+
+  <!-- Messages container -->
+  <div id="messages"></div>
+
+  <script type="module">
+    let client;
+    document.getElementById('connect-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const userId = document.getElementById('user-id').value;
+      client = new EventSource(`http://localhost:8080/connect?userId=${userId}`);
+      client.onmessage = msg => {
+        // Create a new p tag with the message and timestamp
+        const messageElement = document.createElement('p');
+        messageElement.textContent = `${msg.data} (${new Date().toLocaleTimeString()})`;
+
+        // Append the message to the messages container
+        const messagesContainer = document.getElementById('messages');
+        messagesContainer.appendChild(messageElement);
+      };
+    });
+
+    // Submit handler for Send form
+    document.getElementById('send-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const channelId = document.getElementById('channel-id').value;
+      const message = document.getElementById('message').value;
+      fetch(`http://localhost:8080/message?channelId=${channelId}&message=${message}`);
+    });
+  </script>
+</body>
+
+</html>
